@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для любимки ❤️</title>
+    <style>
+        /* Базовые настройки и милый розовый фон */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #ffe3ec 0%, #ffb3c6 100%);
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+        }
+
+        /* Плавающие сердечки на фоне */
+        .background-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .bg-heart {
+            position: absolute;
+            color: rgba(255, 75, 110, 0.3);
+            font-size: 24px;
+            animation: floatBackground 8s linear infinite;
+        }
+
+        @keyframes floatBackground {
+            0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Контейнер по центру */
+        .card {
+            text-align: center;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 40px 50px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(255, 75, 110, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        h1 {
+            color: #ff4b6e;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Проработанная 3D кнопка */
+        .love-button {
+            background: linear-gradient(45deg, #ff4b6e, #ff758f);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 75, 110, 0.5),
+                        inset 0 -5px 10px rgba(0, 0, 0, 0.2),
+                        inset 0 5px 10px rgba(255, 255, 255, 0.4);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            outline: none;
+        }
+
+        /* Эффект глянцевого блика на кнопке */
+        .love-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: rotate(30deg);
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        .love-button:hover::before {
+            left: 130%;
+            opacity: 1;
+        }
+
+        .love-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 75, 110, 0.7),
+                        inset 0 -3px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .love-button:active {
+            transform: translateY(2px) scale(0.98);
+            box-shadow: 0 5px 10px rgba(255, 75, 110, 0.5);
+        }
+
+        /* Стили для падающих сердечек (дождя) */
+        .rain-heart {
+            position: absolute;
+            color: #ff1244;
+            font-size: 30px;
+            pointer-events: none;
+            z-index: 5;
+            text-shadow: 0 0 10px rgba(255, 18, 68, 0.5);
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) translateX(0) rotate(0deg) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) translateX(var(--drift)) rotate(var(--rotation)) scale(var(--scale));
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Фоновые медленные сердечки -->
+    <div class="background-hearts" id="bgHeartsContainer"></div>
+
+    <!-- Центральный блок -->
+    <div class="card">
+        <h1>Для моей любимой Сашеньки</h1>
+        <button class="love-button" id="loveBtn">Люблю тебя ❤️</button>
+    </div>
+
+    <script>
+        // 1. Генерируем постоянный милый фон
+        const bgContainer = document.getElementById('bgHeartsContainer');
+        const heartTypes = ['❤️', '💖', '💝', '💕', '🌸'];
+        
+        function createBackgroundHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('bg-heart');
+            heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            // Случайный размер и скорость для глубины
+            const size = Math.random() * 20 + 15;
+            heart.style.fontSize = size + 'px';
+            heart.style.animationDuration = (Math.random() * 5 + 7) + 's'; 
+            
+            bgContainer.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 12000);
+        }
+        
+        // Создаем фоновые сердечки каждые 600мс
+        setInterval(createBackgroundHeart, 600);
+        for(let i=0; i<15; i++) { // Сразу заполним экран немного
+            setTimeout(createBackgroundHeart, Math.random() * 5000);
+        }
+
+        // 2. Логика для кнопки и супер-дождя из сердец
+        const btn = document.getElementById('loveBtn');
+
+        btn.addEventListener('click', () => {
+            // Запускаем мощный дождь из 60 ярких красных сердец
+            const heartCount = 60;
+            
+            for (let i = 0; i < heartCount; i++) {
+                // Задержка, чтобы они падали не одновременно, а красивой волной
+                setTimeout(() => {
+                    const dropHeart = document.createElement('div');
+                    dropHeart.classList.add('rain-heart');
+                    dropHeart.innerText = '❤️';
+                    
+                    // Случайная позиция по всей ширине экрана
+                    dropHeart.style.left = Math.random() * 100 + 'vw';
+                    dropHeart.style.top = '-40px';
+                    
+                    // Задаем случайные параметры через CSS переменные
+                    const drift = (Math.random() * 200 - 100) + 'px'; // унос вбок
+                    const rotation = (Math.random() * 360) + 'deg';   // кручение
+                    const scale = (Math.random() * 0.8 + 0.6);        // разный размер
+                    const duration = (Math.random() * 1.5 + 1.5) + 's'; // скорость падения (быстро)
+                    
+                    dropHeart.style.setProperty('--drift', drift);
+                    dropHeart.style.setProperty('--rotation', rotation);
+                    dropHeart.style.setProperty('--scale', scale);
+                    dropHeart.style.animationDuration = duration;
+                    
+                    document.body.appendChild(dropHeart);
+                    
+                    // Удаляем элемент после падения
+                    setTimeout(() => {
+                        dropHeart.remove();
+                    }, 3000);
+                }, i * 20); // создаёт эффект лавины
+            }
+            
+            // Легкий интерактив: меняем текст на кнопке при клике
+            btn.innerText = 'И очень сильно! 🥰';
+            setTimeout(() => {
+                btn.innerText = 'Люблю тебя ❤️';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
