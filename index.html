@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Для любимки ❤️</title>
     <style>
-        /* Базовые настройки и милый розовый фон */
+        
         body {
             margin: 0;
             padding: 0;
@@ -19,7 +19,6 @@
             user-select: none;
         }
 
-        /* Плавающие сердечки на фоне */
         .background-hearts {
             position: absolute;
             width: 100%;
@@ -32,23 +31,21 @@
 
         .bg-heart {
             position: absolute;
-            color: rgba(255, 75, 110, 0.3);
             font-size: 24px;
             animation: floatBackground 8s linear infinite;
         }
 
         @keyframes floatBackground {
             0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        /* Контейнер по центру */
         .card {
             text-align: center;
             z-index: 10;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.5);
             padding: 40px 50px;
             border-radius: 30px;
             backdrop-filter: blur(10px);
@@ -56,6 +53,7 @@
             border: 2px solid rgba(255, 255, 255, 0.6);
             transform: scale(1);
             transition: transform 0.3s ease;
+            max-width: 90%;
         }
 
         .card:hover {
@@ -65,11 +63,11 @@
         h1 {
             color: #ff4b6e;
             margin-bottom: 30px;
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+            transition: color 0.3s ease;
         }
 
-        /* Проработанная 3D кнопка */
         .love-button {
             background: linear-gradient(45deg, #ff4b6e, #ff758f);
             color: white;
@@ -88,7 +86,6 @@
             outline: none;
         }
 
-        /* Эффект глянцевого блика на кнопке */
         .love-button::before {
             content: '';
             position: absolute;
@@ -118,14 +115,12 @@
             box-shadow: 0 5px 10px rgba(255, 75, 110, 0.5);
         }
 
-        /* Стили для падающих сердечек (дождя) */
+        /* Стили для падающего дождя из хаотичных эмодзи */
         .rain-heart {
             position: absolute;
-            color: #ff1244;
-            font-size: 30px;
+            font-size: 32px;
             pointer-events: none;
             z-index: 5;
-            text-shadow: 0 0 10px rgba(255, 18, 68, 0.5);
             animation: fall linear forwards;
         }
 
@@ -136,93 +131,260 @@
             }
             100% {
                 transform: translateY(105vh) translateX(var(--drift)) rotate(var(--rotation)) scale(var(--scale));
-                opacity: 0.3;
+                opacity: 0.1;
             }
+        }
+
+        .meme-67 {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #e60026;
+            text-shadow: 3px 3px 0px #000;
+            z-index: 20;
+            pointer-events: none;
+            animation: popMeme 2s ease-out forwards, blinkMeme 0.2s linear infinite;
+        }
+
+        @keyframes popMeme {
+            0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+            15% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+            85% { transform: scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0; }
+        }
+        @keyframes blinkMeme {
+            0%, 100% { color: #e60026; }
+            50% { color: #ffeb3b; }
+        }
+
+        /* Вылетающий случайный текст в случайных местах */
+        .floating-phrase {
+            position: absolute;
+            z-index: 15;
+            font-weight: bold;
+            font-size: 1.8rem;
+            color: #ff2a5f;
+            text-shadow: 2px 2px 8px rgba(255,255,255,0.9), -2px -2px 8px rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 15px;
+            border-radius: 15px;
+            pointer-events: none;
+            animation: phraseOut 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            white-space: nowrap;
+        }
+
+        @keyframes phraseOut {
+            0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+            10% { transform: scale(1) translateY(0); opacity: 1; }
+            80% { opacity: 1; transform: translateY(-30px); }
+            100% { opacity: 0; transform: translateY(-60px); }
+        }
+
+        .meme-photo {
+            position: absolute;
+            z-index: 30;
+            max-width: 250px;
+            max-height: 250px;
+            border: 8px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            pointer-events: none;
+            animation: photoBoom 1.5s ease-in-out forwards;
+        }
+
+        @keyframes photoBoom {
+            0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+            10% { transform: scale(1.3) rotate(15deg); opacity: 1; }
+            15% { transform: scale(1) rotate(5deg); }
+            85% { opacity: 1; transform: scale(1) rotate(5deg); }
+            100% { transform: scale(0.5) translateY(50px); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Фоновые медленные сердечки -->
     <div class="background-hearts" id="bgHeartsContainer"></div>
 
-    <!-- Центральный блок -->
     <div class="card">
-        <h1>Для моей любимой Сашеньки!!!</h1>
+        <h1 id="mainTitle">Для моей любимой Сашеньки</h1>
         <button class="love-button" id="loveBtn">Люблю тебя ❤️</button>
     </div>
 
     <script>
-        // 1. Генерируем постоянный милый фон
-        const bgContainer = document.getElementById('bgHeartsContainer');
-        const heartTypes = ['❤️', '💖', '💝', '💕', '🌸'];
+        const bgTypes = ['❤️', '💖', '💝', '💕', '🌸', '🐶', '🐕']; 
         
-        function createBackgroundHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('bg-heart');
-            heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-            heart.style.left = Math.random() * 100 + 'vw';
-            // Случайный размер и скорость для глубины
-            const size = Math.random() * 20 + 15;
-            heart.style.fontSize = size + 'px';
-            heart.style.animationDuration = (Math.random() * 5 + 7) + 's'; 
+        const rainTypes = [
+            '❤️', '💖', '💝', '💕', 
+            '🏋️‍♀️', '🤸‍♀️', '🏃‍♀️', '💪', '👟', 
+            '🏐', '🏀', 
+            '🧔', '🧔‍♂️', 
+            '🐶', '🐕' 
+        ];
+
+        const phrases = [
+            "Джонник вредина!!!",
+            "Влiд старый уже...",
+            "Ыаыаыа сикс севен (аутизм)",
+            "Какашки мне в кармашки",
+            "Саша лучшая!!!",
+            "Дашка какашка",
+            "Владос понос",
+            "Влад опаздывает на 20 минут",
+            "Влiд не в прайме...",
+            "Сашенька красивая очень!!!",
+            "Это читает сигма вумен",
+            "Любовь Морковь",
+            "Бествей 💩",
+            "И очень сильно! 🥰",
+            "Тренер года! 💪",
+            "Кто тут не в прайме???",
+            "Турники и баскет (обожаюююю) (И тебя тоже! 🥰)",
+            "Забыли сушибургер...",
+            "Как можно было подскользнуться на ступеньках...",
+            "Булочка с маком 🥰",
+            "Ну крутая, ну моя!",
+            "Воздуханчик",
+            "Защекочу!!!",
+            "Джонни мили",
+            "ДЖОННИ, Не ешь говно!!!",
+            "Ох этот дуэт... Романтика",
+            "Дима опять порвал резинку!",
+            "Очень сильно тебя люблю!!!"
+        ];
+
+        const photoUrls = [
+            'photos/1.jpg', 'photos/2.jpg', 'photos/3.jpg', 'photos/4.jpg', 'photos/5.jpg',
+            'photos/6.jpg', 'photos/7.jpg', 'photos/8.jpg', 'photos/9.jpg', 'photos/10.jpg', 
+            'photos/11.jpg', 'photos/12.jpg', 'photos/13.jpg', 'photos/14.jpg', 'photos/15.jpg', 
+            'photos/16.jpg', 'photos/17.jpg', 'photos/18.jpg', 'photos/19.jpg', 'photos/20.jpg',
+            'photos/21.jpg', 'photos/22.jpg', 'photos/23.jpg', 'photos/24.jpg', 'photos/25.jpg', 
+            'photos/26.jpg', 'photos/27.jpg', 'photos/28.jpg', 'photos/29.jpg', 'photos/30.jpg', 
+            'photos/31.jpg'
+        ];
+
+        const boomSound = new Audio('https://www.myinstants.com/media/sounds/vine-boom.mp3');
+        boomSound.volume = 0.6; 
+
+        let clickCount = 0; 
+
+        const bgContainer = document.getElementById('bgHeartsContainer');
+        
+        function createBackgroundElement() {
+            const el = document.createElement('div');
+            el.classList.add('bg-heart');
+            el.innerText = bgTypes[Math.floor(Math.random() * bgTypes.length)];
+            el.style.left = Math.random() * 100 + 'vw';
             
-            bgContainer.appendChild(heart);
+            const size = Math.random() * 22 + 15;
+            el.style.fontSize = size + 'px';
+            el.style.animationDuration = (Math.random() * 6 + 6) + 's'; 
             
-            setTimeout(() => {
-                heart.remove();
-            }, 12000);
+            bgContainer.appendChild(el);
+            setTimeout(() => { el.remove(); }, 12000);
         }
         
-        // Создаем фоновые сердечки каждые 600мс
-        setInterval(createBackgroundHeart, 600);
-        for(let i=0; i<15; i++) { // Сразу заполним экран немного
-            setTimeout(createBackgroundHeart, Math.random() * 5000);
+        setInterval(createBackgroundElement, 500);
+        for(let i=0; i<15; i++) {
+            setTimeout(createBackgroundElement, Math.random() * 4000);
         }
 
-        // 2. Логика для кнопки и супер-дождя из сердец
         const btn = document.getElementById('loveBtn');
+        const mainTitle = document.getElementById('mainTitle');
+
+        function getRandomPhrase() {
+            return phrases[Math.floor(Math.random() * phrases.length)];
+        }
 
         btn.addEventListener('click', () => {
-            // Запускаем мощный дождь из 60 ярких красных сердец
-            const heartCount = 60;
-            
-            for (let i = 0; i < heartCount; i++) {
-                // Задержка, чтобы они падали не одновременно, а красивой волной
+            clickCount++;
+
+            const count = 45;
+            for (let i = 0; i < count; i++) {
                 setTimeout(() => {
-                    const dropHeart = document.createElement('div');
-                    dropHeart.classList.add('rain-heart');
-                    dropHeart.innerText = '❤️';
+                    const drop = document.createElement('div');
+                    drop.classList.add('rain-heart');
+                    drop.innerText = rainTypes[Math.floor(Math.random() * rainTypes.length)];
                     
-                    // Случайная позиция по всей ширине экрана
-                    dropHeart.style.left = Math.random() * 100 + 'vw';
-                    dropHeart.style.top = '-40px';
+                    drop.style.left = Math.random() * 100 + 'vw';
+                    drop.style.top = '-50px';
                     
-                    // Задаем случайные параметры через CSS переменные
-                    const drift = (Math.random() * 200 - 100) + 'px'; // унос вбок
-                    const rotation = (Math.random() * 360) + 'deg';   // кручение
-                    const scale = (Math.random() * 0.8 + 0.6);        // разный размер
-                    const duration = (Math.random() * 1.5 + 1.5) + 's'; // скорость падения (быстро)
+                    const drift = (Math.random() * 240 - 120) + 'px';
+                    const rotation = (Math.random() * 360) + 'deg';
+                    const scale = (Math.random() * 0.7 + 0.6);
+                    const duration = (Math.random() * 1.5 + 1.3) + 's';
                     
-                    dropHeart.style.setProperty('--drift', drift);
-                    dropHeart.style.setProperty('--rotation', rotation);
-                    dropHeart.style.setProperty('--scale', scale);
-                    dropHeart.style.animationDuration = duration;
+                    drop.style.setProperty('--drift', drift);
+                    drop.style.setProperty('--rotation', rotation);
+                    drop.style.setProperty('--scale', scale);
+                    drop.style.animationDuration = duration;
                     
-                    document.body.appendChild(dropHeart);
-                    
-                    // Удаляем элемент после падения
-                    setTimeout(() => {
-                        dropHeart.remove();
-                    }, 3000);
-                }, i * 20); // создаёт эффект лавины
+                    document.body.appendChild(drop);
+                    setTimeout(() => { drop.remove(); }, 2500);
+                }, i * 20);
             }
+
+            const phraseForButton = getRandomPhrase();
+            const phraseForTitle = getRandomPhrase();
+            const phraseForScreen = getRandomPhrase();
             
-            // Легкий интерактив: меняем текст на кнопке при клике
-            btn.innerText = 'И очень сильно! 🥰';
+            btn.innerText = phraseForButton;
+            
+            if(Math.random() < 0.4) {
+                mainTitle.innerText = phraseForTitle;
+            }
+
+            const floatingText = document.createElement('div');
+            floatingText.classList.add('floating-phrase');
+            floatingText.innerText = phraseForScreen;
+            floatingText.style.left = (Math.random() * 60 + 10) + 'vw'; // защита от вылета за края экрана
+            floatingText.style.top = (Math.random() * 70 + 10) + 'vh';
+            document.body.appendChild(floatingText);
+            setTimeout(() => { floatingText.remove(); }, 2500);
+
             setTimeout(() => {
-                btn.innerText = 'Люблю тебя ❤️';
+                if(btn.innerText === phraseForButton) btn.innerText = 'Люблю тебя ❤️';
+                if(mainTitle.innerText === phraseForTitle) mainTitle.innerText = 'Для моей любимой Сашеньки';
             }, 3000);
+
+            if(Math.random() < 0.25) {
+                const meme = document.createElement('div');
+                meme.classList.add('meme-67');
+                meme.innerText = Math.random() < 0.5 ? "6 7" : "SIX SEVEN";
+                
+                const corners = [
+                    { top: '10vh', left: '10vw' },
+                    { top: '10vh', right: '10vw' },
+                    { bottom: '10vh', left: '10vw' },
+                    { bottom: '10vh', right: '10vw' }
+                ];
+                const chosenCorner = corners[Math.floor(Math.random() * corners.length)];
+                
+                if(chosenCorner.left) meme.style.left = chosenCorner.left;
+                if(chosenCorner.right) meme.style.right = chosenCorner.right;
+                if(chosenCorner.top) meme.style.top = chosenCorner.top;
+                if(chosenCorner.bottom) meme.style.bottom = chosenCorner.bottom;
+
+                document.body.appendChild(meme);
+                setTimeout(() => { meme.remove(); }, 2000);
+            }
+
+            if(clickCount % 5 === 0) {
+                if(Math.random() < 1) {
+                    boomSound.currentTime = 0; 
+                    boomSound.play().catch(e => console.log("Нужен клик для активации звука"));
+
+                    const img = document.createElement('img');
+                    img.classList.add('meme-photo');
+                    img.src = photoUrls[Math.floor(Math.random() * photoUrls.length)];
+                    
+                    img.style.left = (Math.random() * 50 + 15) + 'vw';
+                    img.style.top = (Math.random() * 50 + 15) + 'vh';
+
+                    document.body.appendChild(img);
+                    setTimeout(() => { img.remove(); }, 1500);
+                }
+            }
         });
     </script>
 </body>
