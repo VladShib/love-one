@@ -434,7 +434,7 @@ const BestwayParkour = {
     },
 
     player: {
-        x: 100, y: 0, w: 24, h: 42, vy: 0, gravity: 2800, jumpForce: -780, isGrounded: false, animFrame: 0, animTimer: 0,
+        x: 100, y: 0, w: 24, h: 42, vy: 0, gravity: 1600, jumpForce: -700, isGrounded: false, animFrame: 0, animTimer: 0,
         angle: 0, flipSpeed: 7, jumpBuffered: false, bufferTimer: 0,
         
         update(dt, buildings, canvasHeight, onGameOver) {
