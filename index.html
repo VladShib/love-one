@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для любимки ❤️</title>
+    <!-- Подключаем внешние стили -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="background-hearts" id="bgHeartsContainer"></div>
+
+    <div class="card" id="mainCard">
+        <h1 id="mainTitle">Для моей любимой Сашеньки</h1>
+        
+        <div class="buttons-container" id="mainButtons">
+            <button class="menu-btn" id="openMenuBtn">🎮 Мини-Игры</button>
+            <button class="love-button" id="loveBtn">Люблю тебя ❤️</button>
+        </div>
+
+        <div class="games-menu" id="gamesMenu">
+            <button class="game-item-btn" id="startPepsaBtn">🐕 Догони Пепсу</button>
+            <button class="game-item-btn locked" disabled>🧩 Ребусы для чайников</button>
+            <button class="game-item-btn locked" disabled>👊 Отфигачить школоту</button>
+            <!-- ПАРКУР СТАЛ 4-Й МИНИ-ИГРОЙ -->
+            <button class="game-item-btn" id="startParkourBtn">🏃‍♀️ Bestway Parkour</button>
+            <button class="back-btn" id="backToMainBtn">Назад</button>
+        </div>
+    </div>
+
+    <!-- ИГРОВОЙ ЭКРАН (ОБЩИЙ ДЛЯ ИГР) -->
+    <div id="gameScreen">
+        <div class="game-header">
+            <span id="gameExitBtn" style="cursor:pointer; font-size: 1.5rem;">❌</span>
+            <span id="pepsaScoreContainer">Дистанция: <strong id="distanceVal">0</strong> / 2000м</span>
+        </div>
+
+        <!-- 1. ИГРОВАЯ ЗОНА «ДОГОНИ ПЕПСУ» -->
+        <div class="game-container" id="gameArea">
+            <div class="game-pepsa" id="pepsaObj">🐕</div>
+            <div class="game-runner" id="runnerObj">🏃‍♀️</div>
+            <div class="game-floor"></div>
+
+            <!-- Оверлеи состояний -->
+            <div class="game-overlay" id="gameStartOverlay">
+                <h2>Джонник убегает!</h2>
+                <button id="gameActualStartBtn">ПОГНАЛИ!</button>
+            </div>
+
+            <div class="game-overlay" id="gameOverOverlay" style="display:none;">
+                <h2 style="color:#ff4d4d;">СМЕРТЬ В НИЩИТЕ!</h2>
+                <button id="gameRestartBtn">Попробовать снова</button>
+            </div>
+
+            <div class="game-overlay" id="gameWinOverlay" style="display:none;">
+                <h2 style="color:#2ecc71;">ПОБЕДА!</h2>
+                <p style="font-size: 0.9rem; color: #bdc3c7;">Джонни пакость</p>
+                <button id="gameWinCloseBtn">В меню</button>
+            </div>
+        </div>
+
+        <!-- 2. ИГРОВАЯ ЗОНА «BESTWAY PARKOUR» -->
+        <canvas id="parkourCanvas"></canvas>
+
+        <div class="game-controls-hint">
+            Тапай в ЛЮБОЕ место экрана, чтобы <strong>ПРЫГНУТЬ</strong> 🚀
+        </div>
+    </div>
+
+    <!-- Подключаем логику скрипта в самом конце body -->
+    <script src="script.js"></script>
+</body>
+</html>
