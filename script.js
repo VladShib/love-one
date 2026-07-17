@@ -161,10 +161,11 @@ let obstacles = [];
 let gameSpeed = 300; 
 const targetDistance = 2000;
 
+// Оригинальная классическая физика для Пепсы
 let runnerY = 20;
 let runnerVy = 0;
-const gravity = -2600;  
-const jumpForce = 680;  
+const gravity = -1400;  
+const jumpForce = 520;  
 
 if (startPepsaBtn) {
     startPepsaBtn.addEventListener('click', () => {
@@ -216,8 +217,10 @@ if (gameWinCloseBtn) {
     });
 }
 
+// Прыжок в Пепсе — строго с земли, без двойных прыжков
 function jump() {
     if (!isPlaying) return;
+    if (isJumping) return; 
     isJumping = true;
     runnerVy = jumpForce;
 }
@@ -431,14 +434,13 @@ const BestwayParkour = {
     },
 
     player: {
-        x: 100, y: 0, w: 24, h: 42, vy: 0, gravity: 1600, jumpForce: -700, isGrounded: false, animFrame: 0, animTimer: 0,
+        x: 100, y: 0, w: 24, h: 42, vy: 0, gravity: 2800, jumpForce: -780, isGrounded: false, animFrame: 0, animTimer: 0,
         angle: 0, flipSpeed: 7, jumpBuffered: false, bufferTimer: 0,
         
         update(dt, buildings, canvasHeight, onGameOver) {
             this.vy += this.gravity * dt; this.y += this.vy * dt; this.animTimer += dt;
             if (this.animTimer > 0.08) { this.animFrame = (this.animFrame + 1) % 4; this.animTimer = 0; }
             
-            // Если прыжок был зажат в воздухе, таймер буфера тикает
             if (this.jumpBuffered) {
                 this.bufferTimer -= dt;
                 if (this.bufferTimer <= 0) this.jumpBuffered = false;
@@ -456,7 +458,6 @@ const BestwayParkour = {
                     if (this.y + this.h >= b.y && this.y + this.h - this.vy * dt <= b.y + 15) {
                         this.y = b.y - this.h; this.vy = 0; this.isGrounded = true;
                         
-                        // Если игрок нажал прыжок прямо перед приземлением — прыгаем!
                         if (this.jumpBuffered) {
                             this.executeJump(BestwayParkour.audio);
                         }
@@ -470,7 +471,6 @@ const BestwayParkour = {
             if (this.isGrounded) {
                 this.executeJump(audio);
             } else {
-                // Если мы в воздухе, запоминаем нажатие на 0.15 секунды
                 this.jumpBuffered = true;
                 this.bufferTimer = 0.15; 
             }
@@ -502,7 +502,7 @@ const BestwayParkour = {
         this.player.y = startFloorY - this.player.h; 
         this.player.vy = 0;
         this.player.angle = 0;
-        this.player.jumpBuffered = false; // сброс буфера
+        this.player.jumpBuffered = false;
 
         this.buildings = [
             { x: 0, y: startFloorY, w: 600 },
@@ -529,7 +529,7 @@ const BestwayParkour = {
         this.distanceTraveled += this.gameSpeed * dt;
         this.score = Math.floor(this.distanceTraveled / 10);
         
-        // СКОРОСТЬ ТЕПЕРЬ ФИКСИРОВАННАЯ: игра больше не будет разгоняться
+        // СКОРОСТЬ ТЕПЕРЬ ФИКСИРОВАННАЯ И КОМФОРТНАЯ
         this.gameSpeed = 380; 
 
         this.player.update(dt, this.buildings, this.canvas.height, () => this.gameOver());
@@ -648,7 +648,7 @@ const BestwayParkour = {
     }
 };
 
-// --- УПРАВЛЕНИЕ С БУФЕРОМ НАЖАТИЙ ---
+// --- ЕДИНЫЙ, СТРОГО РАЗДЕЛЕННЫЙ ОБРАБОТЧИК КЛИКОВ И КНОПОК ---
 window.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
         if (document.activeElement && document.activeElement.tagName === 'BUTTON') {
@@ -656,8 +656,14 @@ window.addEventListener('keydown', (e) => {
         }
         e.preventDefault(); 
         
-        if (isPlaying) jump();
-        if (BestwayParkour.gameState === 'playing') BestwayParkour.player.jump(BestwayParkour.audio);
+        // Если запущен паркур, прыгает только паркурист
+        if (BestwayParkour.gameState === 'playing') {
+            BestwayParkour.player.jump(BestwayParkour.audio);
+        } 
+        // Иначе если запущена Пепса, прыгает только Пепса
+        else if (isPlaying) {
+            jump(); 
+        }
     }
 });
 
@@ -675,8 +681,11 @@ if (gameScreen) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (isPlaying) jump();
-        if (BestwayParkour.gameState === 'playing') BestwayParkour.player.jump(BestwayParkour.audio);
+        if (BestwayParkour.gameState === 'playing') {
+            BestwayParkour.player.jump(BestwayParkour.audio);
+        } else if (isPlaying) {
+            jump();
+        }
     };
 
     gameScreen.addEventListener('touchstart', handleJumpTrigger, { passive: false });
