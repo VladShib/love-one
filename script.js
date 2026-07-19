@@ -120,12 +120,17 @@ const gamesMenu = document.getElementById('gamesMenu');
 const gameScreen = document.getElementById('gameScreen');
 const turnDeviceOverlay = document.getElementById('turnDeviceOverlay');
 
+// ЖЕЛЕЗОБЕТОННЫЙ СБРОС ПРИ ПЕРВОМ ЗАХОДЕ НА САЙТ (Лечит баг CSS)
+if (turnDeviceOverlay) {
+    turnDeviceOverlay.style.setProperty('display', 'none', 'important');
+}
+
 function checkOrientationForGames() {
     if (!turnDeviceOverlay) return;
     if (window.innerHeight > window.innerWidth) {
-        turnDeviceOverlay.style.display = 'flex';
+        turnDeviceOverlay.style.setProperty('display', 'flex', 'important');
     } else {
-        turnDeviceOverlay.style.display = 'none';
+        turnDeviceOverlay.style.setProperty('display', 'none', 'important');
     }
 }
 
@@ -136,7 +141,6 @@ if (openMenuBtn) {
         if(gamesMenu) gamesMenu.style.display = 'flex';
         if(mainTitle) mainTitle.innerText = '🎯 Выбери игру';
         
-        // Проверяем экран только при входе в меню игр
         checkOrientationForGames();
     });
 }
@@ -148,8 +152,7 @@ if (backToMainBtn) {
         if(mainButtons) mainButtons.style.display = 'flex';
         if(mainTitle) mainTitle.innerText = 'Для моей любимой Сашеньки';
         
-        // Убираем предупреждение, если вышли на главный экран
-        if(turnDeviceOverlay) turnDeviceOverlay.style.display = 'none';
+        if(turnDeviceOverlay) turnDeviceOverlay.style.setProperty('display', 'none', 'important');
     });
 }
 
@@ -160,7 +163,7 @@ window.addEventListener('resize', () => {
     if (isGamesMenuOpen || isFightActive) {
         checkOrientationForGames();
     } else {
-        if(turnDeviceOverlay) turnDeviceOverlay.style.display = 'none';
+        if(turnDeviceOverlay) turnDeviceOverlay.style.setProperty('display', 'none', 'important');
     }
 });
 
@@ -305,7 +308,6 @@ function pepsaGameLoop(timestamp) {
 
     if (Math.floor(distance) % 100 === 0) gameSpeed += 5 * dt;
 
-    // --- ЛОГИКА ХАОТИЧНОГО БЕГА ПЕПСЫ НА ШИРОКОМ ЭКРАНЕ ---
     if (!window.pepsaX) {
         window.pepsaX = 180;
         window.pepsaVx = 200;
@@ -323,10 +325,9 @@ function pepsaGameLoop(timestamp) {
     window.pepsaX += window.pepsaVx * dt;
 
     if (window.pepsaX < 30) { window.pepsaX = 30; window.pepsaVx = -window.pepsaVx; }
-    if (window.pepsaX > window.innerWidth - 80) { window.pepsaX = window.innerWidth - 80; window.pepsaVx = -window.pepsaVx; }
+    if (window.pepsaX > window.innerWidth - 80) { window.window.pepsaX = window.innerWidth - 80; window.pepsaVx = -window.pepsaVx; }
     
     if (pepsa) pepsa.style.left = window.pepsaX + 'px';
-    // -----------------------------------------------------
 
     if (isJumping) {
         runnerVy += gravity * dt;
@@ -510,7 +511,6 @@ if (startFightBtn) {
         if (pCanvas) pCanvas.style.display = 'block';
         if (gameScreen) gameScreen.style.display = 'flex';
         
-        // Перед запуском проверяем экран еще раз
         checkOrientationForGames();
         
         if (typeof DashaFight !== 'undefined') {
