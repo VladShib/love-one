@@ -1,12 +1,11 @@
 // =================================================================
-// --- СВЕРХТАКТИЧЕСКИЙ ФАЙТИНГ «DASHA FIGHT 1v1» (ВЕРСИЯ 2.5) ---
+// --- СВЕРХТАКТИЧЕСКИЙ ФАЙТИНГ «DASHA FIGHT 1v1» (ВЕРСИЯ 2.6) ---
 // =================================================================
 
 const DashaFight = {
     canvas: null, ctx: null, gameState: 'idle', lastTime: 0, animationFrameId: null,
     isMobile: false, particles: [], sparks: [], slashLines: [],
     
-    // Кнопка СТАРТ
     introStartBtn: { x: 0, y: 0, w: 200, h: 60 },
 
     touchControl: {
@@ -34,7 +33,6 @@ const DashaFight = {
         block() { this.playTone(180, 'sine', 0.15, 0.3); }
     },
 
-    // НАСТРОЙКИ ПЕРСОНАЖЕЙ (250 ХП + добавлен stunTimer)
     sasha: {
         name: 'САША', x: 150, y: 0, w: 32, h: 60, hp: 250, maxHp: 250, side: 'left',
         state: 'idle', stateTimer: 0, attackCd: 0, blockCd: 0, blockActiveTimer: 0,
@@ -62,11 +60,9 @@ const DashaFight = {
         
         let groundY = this.canvas.height - 100;
         
-        // Сброс Саши
         this.sasha.hp = 250; this.sasha.maxHp = 250; this.sasha.x = this.canvas.width * 0.25; this.sasha.y = groundY - this.sasha.h;
         this.sasha.state = 'idle'; this.sasha.attackCd = 0; this.sasha.blockCd = 0; this.sasha.slashAnim = null; this.sasha.stunTimer = 0;
         
-        // Сброс Даши
         this.dasha.hp = 250; this.dasha.maxHp = 250; this.dasha.x = this.canvas.width * 0.75 - this.dasha.w; this.dasha.y = groundY - this.dasha.h;
         this.dasha.state = 'idle'; this.dasha.attackCd = 0; this.dasha.blockCd = 0; this.dasha.slashAnim = null; this.dasha.stunTimer = 0;
         this.dasha.aiTimer = 0; this.dasha.aiState = 'evaluate';
@@ -87,7 +83,7 @@ const DashaFight = {
         
         let w = this.canvas.width, h = this.canvas.height;
         
-        // ФИКС КНОПОК: Подняли выше (h - 130 и h - 170), чтобы хитбоксы не уползали под экран смартфона
+        // КНОПКИ И ИХ ХИТБОКСЫ ТЕПЕРЬ НА ОДНОЙ ВЫСОТЕ
         this.touchControl.btnHit = { x: w - 170, y: h - 130, r: 38, active: false };
         this.touchControl.btnBlock = { x: w - 75, y: h - 170, r: 38, active: false };
 
@@ -101,7 +97,7 @@ const DashaFight = {
         
         this._keydownRef = (e) => {
             if (this.gameState !== 'playing') return;
-            if (this.sasha.stunTimer > 0) return; // Игнорируем нажатия в стане
+            if (this.sasha.stunTimer > 0) return; 
             if (e.code === 'KeyA' || e.code === 'ArrowLeft') this.keys.Left = true;
             if (e.code === 'KeyD' || e.code === 'ArrowRight') this.keys.Right = true;
             if (e.code === 'KeyJ' || e.code === 'KeyZ') this.triggerHit(this.sasha);
@@ -129,16 +125,29 @@ const DashaFight = {
         this.canvas.onmousedown = (e) => handleStartClick(e.clientX, e.clientY);
         this.canvas.ontouchstart = (e) => {
             e.preventDefault();
-            const touch = e.changedTouches[0];
-            if (this.gameState === 'intro') { handleStartClick(touch.clientX, touch.clientY); return; }
+            const rect = this.canvas.getBoundingClientRect();
+            if (this.gameState === 'intro') { 
+                const touch = e.changedTouches[0];
+                handleStartClick(touch.clientX, touch.clientY); 
+                return; 
+            }
             if (this.gameState !== 'playing' || this.sasha.stunTimer > 0) return;
+            
             for (let t of e.changedTouches) {
-                if (this.checkCircleTouch(t.clientX, t.clientY, this.touchControl.btnHit)) { this.triggerHit(this.sasha); }
-                else if (this.checkCircleTouch(t.clientX, t.clientY, this.touchControl.btnBlock)) { this.triggerBlock(this.sasha); }
-                else if (t.clientX < window.innerWidth / 2 && !this.touchControl.stick.active) {
+                // Переводим глобальные координаты тача в локальные координаты канваса
+                const canvasX = t.clientX - rect.left;
+                const canvasY = t.clientY - rect.top;
+
+                if (this.checkCircleTouch(canvasX, canvasY, this.touchControl.btnHit)) { 
+                    this.triggerHit(this.sasha); 
+                }
+                else if (this.checkCircleTouch(canvasX, canvasY, this.touchControl.btnBlock)) { 
+                    this.triggerBlock(this.sasha); 
+                }
+                else if (canvasX < window.innerWidth / 2 && !this.touchControl.stick.active) {
                     this.touchControl.stick.active = true; this.touchControl.stick.id = t.identifier;
-                    this.touchControl.stick.startX = t.clientX; this.touchControl.stick.startY = t.clientY;
-                    this.touchControl.stick.curX = t.clientX; this.touchControl.stick.curY = t.clientY;
+                    this.touchControl.stick.startX = canvasX; this.touchControl.stick.startY = canvasY;
+                    this.touchControl.stick.curX = canvasX; this.touchControl.stick.curY = canvasY;
                 }
             }
         };
@@ -146,9 +155,11 @@ const DashaFight = {
         this.canvas.ontouchmove = (e) => {
             e.preventDefault();
             if (this.gameState !== 'playing' || !this.touchControl.stick.active || this.sasha.stunTimer > 0) return;
+            const rect = this.canvas.getBoundingClientRect();
             for (let t of e.touches) {
                 if (t.identifier === this.touchControl.stick.id) {
-                    this.touchControl.stick.curX = t.clientX;
+                    const canvasX = t.clientX - rect.left;
+                    this.touchControl.stick.curX = canvasX;
                     let dx = this.touchControl.stick.curX - this.touchControl.stick.startX;
                     this.touchControl.stick.dir = dx < -15 ? -1 : (dx > 15 ? 1 : 0);
                 }
@@ -191,13 +202,10 @@ const DashaFight = {
             if (target.state === 'blocking') {
                 if (target.isParryWindow) {
                     this.audio.parry(); 
-                    
-                    // МЕХАНИКА СТАНА: Того, кто бездумно ударил в парирование, оглушает на 1.5 секунды
                     char.hp -= 15; 
                     char.stunTimer = 1.5;
-                    char.state = 'idle'; // сброс анимаций
-                    char.attackCd = 1.5; // запрет бить сразу после выхода из стана
-                    
+                    char.state = 'idle'; 
+                    char.attackCd = 1.5; 
                     this.spawnSparks(hitX, hitY, '#ffea00', 35);
                     this.slashLines.push({ x1: hitX - 80, y1: hitY - 80, x2: hitX + 80, y2: hitY + 80, color: '#ffea00', life: 0.2, w: 7 });
                 } else {
@@ -207,14 +215,11 @@ const DashaFight = {
                 }
             } else {
                 this.audio.hit(); 
-                
-                // РАЗДЕЛЬНЫЙ УРОН: Даша наносит 22, Саша — 12
                 if (char === this.dasha) {
                     target.hp -= 22; 
                 } else {
                     target.hp -= 12; 
                 }
-
                 this.spawnBlood(hitX, hitY, isLeft ? 1 : -1);
                 this.slashLines.push({ x1: hitX - (isLeft ? 140 : -140), y1: hitY - 90, x2: hitX + (isLeft ? 140 : -140), y2: hitY + 90, color: '#ff0055', life: 0.35, w: 15 });
             }
@@ -229,14 +234,7 @@ const DashaFight = {
 
     updateAI(dt) {
         let ai = this.dasha; let p = this.sasha;
-        
-        // Проверка оглушения Даши
-        if (ai.stunTimer > 0) {
-            ai.stunTimer -= dt;
-            ai.state = 'idle';
-            return; 
-        }
-
+        if (ai.stunTimer > 0) { ai.stunTimer -= dt; ai.state = 'idle'; return; }
         ai.aiTimer -= dt;
         ai.side = (ai.x > p.x) ? 'right' : 'left';
 
@@ -250,36 +248,20 @@ const DashaFight = {
         
         let dist = Math.abs((ai.x + ai.w/2) - (p.x + p.w/2));
 
-        // НАКАЗАНИЕ ЗА СПАМ ВПРИТЫК
         if (dist < 85 && p.state === 'attacking') {
-            if (ai.blockCd <= 0 && Math.random() < 0.6) {
-                this.triggerBlock(ai); 
-                return;
-            } else if (ai.attackCd <= 0) {
-                this.triggerHit(ai); 
-                return;
-            }
+            if (ai.blockCd <= 0 && Math.random() < 0.6) { this.triggerBlock(ai); return; }
+            else if (ai.attackCd <= 0) { this.triggerHit(ai); return; }
         }
 
-        // Агрессивный ИИ (частые атаки)
         if (ai.aiTimer <= 0) {
             ai.aiTimer = 0.15 + Math.random() * 0.25;
-
             if (dist < 120) {
                 let r = Math.random();
-                if (r < 0.65 && ai.attackCd <= 0) { 
-                    ai.aiState = 'attack';
-                } else if (r < 0.85 && ai.blockCd <= 0) {
-                    this.triggerBlock(ai);
-                } else {
-                    ai.aiState = 'backoff';
-                    ai.targetX = ai.x + (ai.side === 'right' ? 70 : -70);
-                }
-            } else if (dist > 180) {
-                ai.aiState = 'approach';
-            } else {
-                ai.aiState = Math.random() < 0.7 ? 'approach' : 'attack';
-            }
+                if (r < 0.65 && ai.attackCd <= 0) { ai.aiState = 'attack'; }
+                else if (r < 0.85 && ai.blockCd <= 0) { this.triggerBlock(ai); }
+                else { ai.aiState = 'backoff'; ai.targetX = ai.x + (ai.side === 'right' ? 70 : -70); }
+            } else if (dist > 180) { ai.aiState = 'approach'; }
+            else { ai.aiState = Math.random() < 0.7 ? 'approach' : 'attack'; }
         }
 
         if (ai.aiState === 'attack') {
@@ -298,7 +280,6 @@ const DashaFight = {
     update(dt) {
         if (this.gameState !== 'playing') return;
 
-        // Таймеры оглушения
         if (this.sasha.stunTimer > 0) this.sasha.stunTimer -= dt;
         if (this.dasha.stunTimer > 0) this.dasha.stunTimer -= dt;
 
@@ -309,7 +290,6 @@ const DashaFight = {
 
         this.sasha.side = (this.sasha.x < this.dasha.x) ? 'left' : 'right';
 
-        // Логика Саши (активна, только если он не в стане)
         if (this.sasha.stunTimer <= 0) {
             if (this.sasha.state === 'blocking') {
                 this.sasha.blockActiveTimer -= dt;
@@ -340,10 +320,9 @@ const DashaFight = {
                 if (this.sasha.x > this.canvas.width - this.sasha.w) this.sasha.x = this.canvas.width - this.sasha.w;
             }
         } else {
-            this.sasha.state = 'idle'; // Стоит в ступоре при стане
+            this.sasha.state = 'idle';
         }
 
-        // Логика Даши (активна, только если она не в стане)
         if (this.dasha.stunTimer <= 0) {
             if (this.dasha.state === 'attacking') {
                 this.dasha.stateTimer -= dt;
@@ -375,7 +354,6 @@ const DashaFight = {
         
         ctx.fillStyle = baseColor; ctx.shadowColor = neonColor; ctx.shadowBlur = 12;
         
-        // Визуальный эффект оглушения (персонаж мигает серым/желтым)
         if (char.stunTimer > 0) {
             ctx.fillStyle = '#555566';
             ctx.shadowColor = '#ffea00';
@@ -418,7 +396,6 @@ const DashaFight = {
             ctx.stroke(); ctx.restore();
         }
         
-        // Звездочки над головой если перс в стане
         if (char.stunTimer > 0) {
             ctx.save();
             ctx.fillStyle = '#ffea00'; ctx.font = 'bold 16px Arial';
@@ -551,7 +528,6 @@ const DashaFight = {
     },
 
     loop(now) {
-        // ЖЕЛЕЗОБЕТОННЫЙ ВЫХОД: Цикл полностью игнорируется при GameOver
         if (this.gameState === 'idle' || this.gameState === 'gameover') return;
         
         let dt = (now - this.lastTime) / 1000; if (dt > 0.1) dt = 0.1;
@@ -572,10 +548,9 @@ const DashaFight = {
             this.animationFrameId = null;
         }
         
-        let resultText = this.sasha.hp > 0 ? "Ахахах туда школоту!!!" : "Изи, мелкая ботиха";
+        let resultText = this.sasha.hp > 0 ? "Ахахаха туда школоту!!!" : "Изи, мелкая ботиха";
         let textColor = this.sasha.hp > 0 ? "#00ffcc" : "#ff4b6e";
 
-        // Задержка в 50мс гарантирует, что старые циклы рендеринга завершились и текст пропишется
         setTimeout(() => {
             this.drawGameOver(resultText, textColor);
         }, 50);
