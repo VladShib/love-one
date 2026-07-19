@@ -548,7 +548,7 @@ const DashaFight = {
             this.animationFrameId = null;
         }
         
-        let resultText = this.sasha.hp > 0 ? "Ахахаха туда школоту!!!" : "Изи, мелкая ботиха";
+        let resultText = this.sasha.hp > 0 ? "Ахахаха туда ботиху эту!!!" : "Изи, мелкая";
         let textColor = this.sasha.hp > 0 ? "#00ffcc" : "#ff4b6e";
 
         setTimeout(() => {
